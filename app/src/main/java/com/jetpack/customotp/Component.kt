@@ -1,5 +1,6 @@
 package com.jetpack.customotp
 
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -7,10 +8,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusOrder
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -22,7 +25,7 @@ import androidx.compose.ui.unit.dp
 fun OTPTextFields(
     modifier: Modifier = Modifier,
     length: Int,
-    onFilled: (code: String) -> Unit
+    onFilled: ((code: String) -> Unit)? = null
 ) {
     var code: List<Char> by remember { mutableStateOf(listOf()) }
     val focusRequesters: List<FocusRequester> = remember {
@@ -41,9 +44,7 @@ fun OTPTextFields(
                 modifier = Modifier
                     .width(50.dp)
                     .height(50.dp)
-                    .focusOrder(focusRequester = focusRequesters[index]) {
-                        focusRequesters[index + 1].requestFocus()
-                    },
+                    .focusRequester(focusRequesters[index]),
                 textStyle = MaterialTheme.typography.body2.copy(
                     textAlign = TextAlign.Center, color = Color.Black
                 ),
@@ -62,13 +63,14 @@ fun OTPTextFields(
                             }
                         } else {
                             if (code.size > index) {
-                                temp[index] = value.getOrNull(0)?: ' '
+                                temp[index] = value.getOrNull(0) ?: ' '
                             } else {
                                 temp.add(value.getOrNull(0) ?: ' ')
                                 code = temp
-                                focusRequesters.getOrNull(index + 1)?.requestFocus() ?: onFilled(
-                                    code.joinToString(separator = "")
-                                )
+                                focusRequesters.getOrNull(index + 1)?.requestFocus()
+                                    ?: onFilled?.invoke(
+                                        code.joinToString(separator = "")
+                                    )
                             }
                         }
                     }
@@ -84,21 +86,3 @@ fun OTPTextFields(
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
