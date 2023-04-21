@@ -1,5 +1,6 @@
 package com.jetpack.customotp
 
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -24,7 +25,7 @@ import androidx.compose.ui.unit.dp
 fun OTPTextFields(
     modifier: Modifier = Modifier,
     length: Int,
-    onFilled: (code: String) -> Unit
+    onFilled: ((code: String) -> Unit)? = null
 ) {
     var code: List<Char> by remember { mutableStateOf(listOf()) }
     val focusRequesters: List<FocusRequester> = remember {
@@ -66,9 +67,10 @@ fun OTPTextFields(
                             } else {
                                 temp.add(value.getOrNull(0) ?: ' ')
                                 code = temp
-                                focusRequesters.getOrNull(index + 1)?.requestFocus() ?: onFilled(
-                                    code.joinToString(separator = "")
-                                )
+                                focusRequesters.getOrNull(index + 1)?.requestFocus()
+                                    ?: onFilled?.invoke(
+                                        code.joinToString(separator = "")
+                                    )
                             }
                         }
                     }
